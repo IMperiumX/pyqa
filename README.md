@@ -7,7 +7,7 @@ pyqa
 
 [![Documentation Status](https://readthedocs.org/projects/pyqa/badge/?version=latest)](https://pyqa.readthedocs.io/en/latest/?version=latest)
 
-for asnwers to coding problems
+Python console appliction that searches the internet for asnwers to coding problems
 
 - Free software: Apache Software License 2.0
 - Documentation: <https://pyqa.readthedocs.io>.

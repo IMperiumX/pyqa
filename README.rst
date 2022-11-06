@@ -16,7 +16,7 @@ pyqa
 
 
 
-for asnwers to coding problems
+Python console appliction that searches the internet for asnwers to coding problems
 
 
 * Free software: Apache Software License 2.0
