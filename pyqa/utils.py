@@ -44,3 +44,68 @@ def _get_from_cache(cache_key):
     # Restore the log level
     logging.getLogger().setLevel(current_log_level)
     return page
+
+from urllib.request import getproxies
+from urllib.parse import quote as url_quote, urlparse, parse_qs
+
+import requests
+
+
+URL = get_env("HOWDOI_URL", DEFAULT_URL)
+
+
+pyqa_session = requests.session()
+
+
+def _get_search_url(search_engine):
+    return SEARCH_URLS.get(search_engine, SEARCH_URLS["google"])
+
+
+def get_proxies():
+    proxies = getproxies()
+    filtered_proxies = {}
+    for key, value in proxies.items():
+        if key.startswith("http"):
+            if not value.startswith("http"):
+                filtered_proxies[key] = f"http://{value}"
+            else:
+                filtered_proxies[key] = value
+    return filtered_proxies
+
+
+def _random_int(width):
+    bres = os.urandom(width)
+    import sys
+
+    if sys.version < "3":
+        ires = int(bres.encode("hex"), 16)
+    else:
+        ires = int.from_bytes(bres, "little")
+
+    return ires
+
+
+def _random_choice(seq):
+    return seq[_random_int(1) % len(seq)]
+
+
+def _get_result(url):
+    try:
+        resp = pyqa_session.get(
+            url,
+            headers={"User-Agent": _random_choice(USER_AGENTS)},
+            proxies=get_proxies(),
+            verify=VERIFY_SSL_CERTIFICATE,
+            cookies={"CONSENT": "YES+US.en+20170717-00-0"},
+        )
+        resp.raise_for_status()
+        return resp.text
+    except requests.exceptions.SSLError as error:
+        logging.error(
+            "%sEncountered an SSL Error. Try using HTTP instead of "
+            'HTTPS by setting the environment variable "HOWDOI_DISABLE_SSL".\n%s',
+            RED,
+            END_FORMAT,
+        )
+        raise error
+
