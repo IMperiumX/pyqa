@@ -1,3 +1,7 @@
+from urllib.request import getproxies
+import requests
+from urllib.parse import quote as url_quote, urlparse, parse_qs
+from .constants import *
 import inspect
 import logging
 import os
@@ -6,7 +10,6 @@ import appdirs
 from cachelib import NullCache, FileSystemCache
 
 get_env = os.getenv
-from .constants import *
 
 
 def get_cache_dir():
@@ -44,11 +47,6 @@ def _get_from_cache(cache_key):
     # Restore the log level
     logging.getLogger().setLevel(current_log_level)
     return page
-
-from urllib.request import getproxies
-from urllib.parse import quote as url_quote, urlparse, parse_qs
-
-import requests
 
 
 URL = get_env("HOWDOI_URL", DEFAULT_URL)
@@ -108,4 +106,3 @@ def _get_result(url):
             END_FORMAT,
         )
         raise error
-

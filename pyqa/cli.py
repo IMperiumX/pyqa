@@ -1,4 +1,6 @@
 """Console script for pyqa."""
+from pyqa import utils
+from pyqa import __version__
 import sys
 import click
 import logging
@@ -19,8 +21,6 @@ import os
 
 "---f", the name is _f
 """
-from pyqa import __version__
-from pyqa import utils
 
 
 @click.group(invoke_without_command=True)
