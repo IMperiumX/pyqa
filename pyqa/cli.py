@@ -7,7 +7,6 @@ import click
 
 from pyqa import __version__
 from pyqa import utils
-
 """
 "-f", "--foo-bar", the name is foo_bar
 

@@ -22,8 +22,7 @@ def get_cache_dir():
     cache_dir = get_env("PYQA_CACHE_DIR")
     if cache_dir is None:
         cache_dir = appdirs.user_cache_dir(
-            appname=APP_NAME
-        )  # return /home/yusufadell/.cache/APP_NAME
+            appname=APP_NAME)  # return /home/yusufadell/.cache/APP_NAME
     return cache_dir
 
 
@@ -55,7 +54,6 @@ def _get_from_cache(cache_key):
 
 
 URL = get_env("HOWDOI_URL", DEFAULT_URL)
-
 
 pyqa_session = requests.session()
 
