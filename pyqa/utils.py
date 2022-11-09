@@ -1,13 +1,18 @@
-from urllib.request import getproxies
-import requests
-from urllib.parse import quote as url_quote, urlparse, parse_qs
-from .constants import *
 import inspect
 import logging
 import os
-from pyqa import __version__
+from urllib.parse import parse_qs
+from urllib.parse import quote as url_quote
+from urllib.parse import urlparse
+from urllib.request import getproxies
+
 import appdirs
-from cachelib import NullCache, FileSystemCache
+import requests
+from cachelib import FileSystemCache, NullCache
+
+from pyqa import __version__
+
+from .constants import *
 
 get_env = os.getenv
 

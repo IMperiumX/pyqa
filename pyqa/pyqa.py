@@ -1,7 +1,6 @@
 """Main module."""
 import os
 
-
 from pyqa.constants import *
 
 get_env = os.getenv

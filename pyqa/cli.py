@@ -1,10 +1,11 @@
 """Console script for pyqa."""
-from pyqa import utils
-from pyqa import __version__
-import sys
-import click
 import logging
 import os
+import sys
+
+import click
+
+from pyqa import __version__, utils
 
 """
 "-f", "--foo-bar", the name is foo_bar
