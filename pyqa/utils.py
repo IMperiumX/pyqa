@@ -8,11 +8,11 @@ from urllib.request import getproxies
 
 import appdirs
 import requests
-from cachelib import FileSystemCache, NullCache
-
-from pyqa import __version__
+from cachelib import FileSystemCache
+from cachelib import NullCache
 
 from .constants import *
+from pyqa import __version__
 
 get_env = os.getenv
 
