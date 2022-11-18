@@ -20,7 +20,6 @@ import os
 "---f", the name is _f
 """
 from pyqa import __version__
-from pyqa import utils
 
 
 @click.group(invoke_without_command=True)
@@ -29,18 +28,14 @@ from pyqa import utils
 @click.pass_context
 def main(ctx, query):
     ctx.ensure_object(dict)
-
-    ctx.obj["runner"] = "pyQA"
+    args = ctx.obj
+    args["runner"] = "pyQA"
     query = " ".join(query)
-    ctx.obj["query"] = query
-    click.echo(ctx.obj)
-    cache_key = utils._get_cache_key(ctx.obj)
-    print(f"cache_key: {cache_key}")
-    res = utils._get_from_cache(cache_key)
-    print(res)
+    args["query"] = query
+    args["search_engine"] = "google"
+    click.echo(args)
 
 
-@main.command()
 @click.option(
     "--version",
     expose_value=False,
