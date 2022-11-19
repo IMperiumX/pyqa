@@ -2,7 +2,7 @@
 import os
 
 
-from pyqa.constants import *
+from .constants import DEFAULT_URL
 
 get_env = os.getenv
 URL = get_env("PYQA_URL", DEFAULT_URL)
