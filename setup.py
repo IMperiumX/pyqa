@@ -3,9 +3,9 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
-from pyqa import __version__
+from pyqa import __version__, __author__, __email__
 
-with open("README.rst") as readme_file:
+with open("README.md") as readme_file:
     readme = readme_file.read()
 
 with open("HISTORY.rst") as history_file:
@@ -20,8 +20,8 @@ test_requirements = [
 ]
 
 setup(
-    author="Yusuf Adel",
-    author_email="yusufadell.dev@gmail.com",
+    author=__author__,
+    author_email=__email__,
     python_requires=">=3.6",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
@@ -42,6 +42,7 @@ setup(
     install_requires=requirements,
     license="Apache Software License 2.0",
     long_description=readme + "\n\n" + history,
+    long_description_content_type="text/markdown",
     include_package_data=True,
     keywords="pyqa",
     name="pyqa",
