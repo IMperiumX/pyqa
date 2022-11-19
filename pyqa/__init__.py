@@ -2,7 +2,10 @@
 
 __author__ = """Yusuf Adel"""
 __email__ = "yusufadell.dev@gmail.com"
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
-from .pyqa import command_line_runner
-from .utils import get_cache
+from .pyqa import pyqa
+
+__all__ = [
+    "pyqa",
+]
