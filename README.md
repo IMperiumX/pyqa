@@ -12,7 +12,7 @@ Python console appliction that searches the internet for asnwers to coding probl
 - Free software: Apache Software License 2.0
 - Documentation: <https://pyqa.readthedocs.io>.
 
-![screenshot](assets/screenshot.png)
+![screenshot](https://github.com/yusufadell/pyqa/raw/master/assets/screenshot.png)
 
 Features
 --------
