@@ -1,5 +1,21 @@
-APP_NAME = "pyQA"
+from pyfiglet import figlet_format
+import textwrap
 
+APP_NAME = "pyQA"
+LOGO = figlet_format(APP_NAME, font="slant")
+
+DEFUALT_QUERY = "how to center a div"
+
+EPILOG = textwrap.dedent(
+    """\
+                                    environment variable examples:
+                                    PYQA_COLORIZE=1
+                                    PYQA_DISABLE_CACHE=1
+                                    PYQA_DISABLE_SSL=1
+                                    PYQA_SEARCH_ENGINE=google
+                                    PYQA_URL=serverfault.com
+                                    """
+)
 # variables for text formatting, prepend to string to begin text formatting.
 BOLD = "\033[1m"
 GREEN = "\033[92m"
@@ -8,6 +24,7 @@ UNDERLINE = "\033[4m"
 END_FORMAT = "\033[0m"  # append to string to end text formatting.
 
 NO_RESULTS_MESSAGE = "Sorry, couldn't find any help with that topic"
+NO_ANSWER_MSG = "< no answer given >"
 
 # stash options
 STASH_SAVE = "save"
@@ -52,3 +69,5 @@ BLOCK_INDICATORS = (
 
 CACHE_EMPTY_VAL = "NULL"
 CACHE_ENTRY_MAX = 128
+
+URL = "https://stackoverflow.com/questions/64007220/how-to-use-django-filters-to-filter-for-many-values-for-the-same-field"
