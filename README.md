@@ -12,6 +12,8 @@ Python console appliction that searches the internet for asnwers to coding probl
 - Free software: Apache Software License 2.0
 - Documentation: <https://pyqa.readthedocs.io>.
 
+![screenshot](assets/screenshot.png)
+
 Features
 --------
 
@@ -21,6 +23,5 @@ Credits
 -------
 
 This package was created with
-[Cookiecutter](https://github.com/audreyr/cookiecutter) and the
-[audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage)
-project template.
+
+[Cookiecutter](https://github.com/audreyr/cookiecutter) and the [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage) project template.
