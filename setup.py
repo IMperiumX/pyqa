@@ -13,6 +13,8 @@ with open("HISTORY.rst") as history_file:
 
 requirements = [
     "Click>=7.0",
+    "rich>=12.6.0",
+    "textual>=0.4.0",
 ]
 
 test_requirements = [
@@ -45,7 +47,7 @@ setup(
     long_description_content_type="text/markdown",
     include_package_data=True,
     keywords="pyqa",
-    name="pyqa",
+    name="pyqa-y8l",
     packages=find_packages(include=["pyqa", "pyqa.*"]),
     test_suite="tests",
     tests_require=test_requirements,
