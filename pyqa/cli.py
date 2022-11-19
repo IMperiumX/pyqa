@@ -13,9 +13,8 @@ from pyqa.constants import LOGO, URL, DEFUALT_QUERY, EPILOG
 
 
 @click.group()  # invoke_without_command=True
-@click.version_option(message="pyQA, version %(version)s")
+@click.version_option(__version__, message="pyQA, version %(version)s")
 @click.option("-a", "--all", is_flag=True)
-"-f", "--filename", "dest", the name is dest
 @click.option(
     "-e",
     "--engine",
@@ -31,9 +30,6 @@ def main(ctx, **kwargs):
     args["engine"] = kwargs["engine"]
     args["all"] = kwargs["all"]
 
-"-f", "-fb", the name is f
-
-"--f", "--foo-bar", the name is f
 
 @main.command(epilog=EPILOG)
 @click.argument("query", nargs=-1)
@@ -52,7 +48,7 @@ def query(ctx, **kwargs):
             border_style="green",
             title="pyQA",
             subtitle="Thank you for using pyQA",
-)
+        )
     )
 
     url = URL  # TODO: get link from query
@@ -67,7 +63,7 @@ def query(ctx, **kwargs):
             border_style="green",
             title="pyQA",
             subtitle="Tank you for using pyQA",
-)
+        )
     )
 
 
