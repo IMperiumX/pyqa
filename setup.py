@@ -15,6 +15,7 @@ requirements = [
     "Click>=7.0",
     "rich>=12.6.0",
     "textual>=0.4.0",
+    "pyfiglet>=0.8.post1",
 ]
 
 test_requirements = [

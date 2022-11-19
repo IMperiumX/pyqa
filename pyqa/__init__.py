@@ -2,7 +2,7 @@
 
 __author__ = """Yusuf Adel"""
 __email__ = "yusufadell.dev@gmail.com"
-__version__ = "0.2.2"
+__version__ = "0.2.4"
 
 from pyqa.pyqa import command_line_runner
 
