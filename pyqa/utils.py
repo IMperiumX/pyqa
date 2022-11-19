@@ -1,64 +1,23 @@
 import inspect
 import logging
 import os
-from pyqa import __version__
-import appdirs
-from cachelib import NullCache, FileSystemCache
-
-get_env = os.getenv
-from .constants import *
-
-
-def get_cache_dir():
-    # Get the cache directory
-    cache_dir = get_env("PYQA_CACHE_DIR")
-    if cache_dir is None:
-        cache_dir = appdirs.user_cache_dir(
-            appname=APP_NAME
-        )  # return /home/yusufadell/.cache/APP_NAME
-    return cache_dir
-
-
-def get_cache():
-    # Get the cache
-    cache = NullCache()
-    cache_dir = get_cache_dir()
-    if cache_dir is not None:
-        cache = FileSystemCache(cache_dir, CACHE_ENTRY_MAX, default_timeout=0)
-    return cache
-
-
-def _get_cache_key(args):
-    frame = inspect.currentframe()
-    calling_func = inspect.getouterframes(frame)[1].function
-    return f"{calling_func} {args} {__version__}"
-
-
-def _get_from_cache(cache_key):
-    # As of cachelib 0.3.0, it internally logging a warning on cache miss
-    current_log_level = logging.getLogger().getEffectiveLevel()
-    # Reduce the log level so the warning is not printed
-    logging.getLogger().setLevel(logging.ERROR)
-    cache = get_cache()
-    page = cache.get(cache_key)  # pylint: disable=assignment-from-none
-    # Restore the log level
-    logging.getLogger().setLevel(current_log_level)
-    return page
-
 from urllib.request import getproxies
-from urllib.parse import quote as url_quote, urlparse, parse_qs
 
+import appdirs
 import requests
 
+from cachelib import FileSystemCache, NullCache
+from pyqa.constants import (APP_NAME, CACHE_ENTRY_MAX, END_FORMAT, GREEN,
+                            NO_ANSWER_MSG, RED, SUPPORTED_SEARCH_ENGINES,
+                            USER_AGENTS, VERIFY_SSL_CERTIFICATE)
+from pyqa.erros import (BingValidationError, DDGValidationError,
+                        GoogleValidationError)
 
-URL = get_env("HOWDOI_URL", DEFAULT_URL)
-
+# =======================================
+#         get page content             ||
+# =======================================
 
 pyqa_session = requests.session()
-
-
-def _get_search_url(search_engine):
-    return SEARCH_URLS.get(search_engine, SEARCH_URLS["google"])
 
 
 def get_proxies():
@@ -96,16 +55,85 @@ def _get_result(url):
             headers={"User-Agent": _random_choice(USER_AGENTS)},
             proxies=get_proxies(),
             verify=VERIFY_SSL_CERTIFICATE,
-            cookies={"CONSENT": "YES+US.en+20170717-00-0"},
+            cookies={"CONSENT": "YES+US.en+20221119-00-0"},
         )
         resp.raise_for_status()
         return resp.text
     except requests.exceptions.SSLError as error:
         logging.error(
             "%sEncountered an SSL Error. Try using HTTP instead of "
-            'HTTPS by setting the environment variable "HOWDOI_DISABLE_SSL".\n%s',
+            'HTTPS by setting the environment variable "PYQA_DISABLE_SSL".\n%s',
             RED,
             END_FORMAT,
         )
         raise error
+
+
+# =======================================
+#            extract answer            ||
+# =======================================
+from pyquery import PyQuery as pq
+
+
+def _add_links_to_text(element):
+    hyperlinks = element.find("a")
+
+    for hyperlink in hyperlinks:
+        pquery_object = pq(hyperlink)
+        href = hyperlink.attrib["href"]
+        copy = pquery_object.text()
+        if copy == href:
+            replacement = copy
+        else:
+            replacement = f"[{copy}]({href})"
+        pquery_object.replace_with(replacement)
+
+
+def get_text(element):
+    """return inner text in pyquery element"""
+    _add_links_to_text(element)
+    try:
+        return element.text(squash_space=False)
+    except TypeError:
+        return element.text()
+
+
+def _get_answer(args, url):  # pylint: disable=too-many-branches
+    logging.info("Fetching page: %s", url)
+    page = _get_result(url + "?answertab=votes")
+
+    html = pq(page)
+
+    first_answer = html(".answercell").eq(0) or html(".answer").eq(0)
+
+    instructions = first_answer.find("pre") or first_answer.find("code")
+    args["tags"] = [t.text for t in html(".post-tag")]
+    # make decision on answer body class.
+    if first_answer.find(".js-post-body"):
+        answer_body_cls = ".js-post-body"
+    else:
+        # rollback to post-text class
+        answer_body_cls = ".post-text"
+
+    if not instructions and not args["all"]:
+        logging.info("No code sample found, returning entire answer")
+        text = get_text(first_answer.find(answer_body_cls).eq(0))
+    elif args["all"]:
+        logging.info("Returning entire answer")
+        texts = []
+        for html_tag in first_answer.items(f"{answer_body_cls} > *"):
+            current_text = get_text(html_tag)
+            if current_text:
+                if html_tag[0].tag in ["pre", "code"]:
+                    texts.append(current_text)
+                else:
+                    texts.append(current_text)
+        text = "\n".join(texts)
+    else:
+        text = get_text(instructions.eq(0))
+    if text is None:
+        logging.info("%sAnswer was empty%s", RED, END_FORMAT)
+        text = NO_ANSWER_MSG
+    text = text.strip()
+    return text
 
