@@ -49,22 +49,6 @@ def query(ctx, **kwargs):
     utils.display_panel(text=res)
 
 
-@main.command()
-@click.pass_context
-def run(ctx):
-    from .pyqa import pyqa
-
-    pyqa_result = pyqa(ctx)
-    # if os.name == "nt":
-    #     # Windows
-    #     print(pyqa_result)
-    # else:
-    #     utf8_result = pyqa_result.encode("utf-8", "ignore")
-    #     # Write UTF-8 to stdout
-    #     click.echo(utf8_result)
-    click.echo(pyqa_result)
-
-
 # If you have a subcommand called run taking an option called reload
 # and the prefix is WEB, then the variable is WEB_RUN_RELOAD.
 if __name__ == "__main__":

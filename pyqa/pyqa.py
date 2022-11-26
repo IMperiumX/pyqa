@@ -1,10 +1,9 @@
 """Main module."""
-import os
 
 
 def command_line_runner():
     """Command line runner."""
-    print(f"pyQA Runnser")
+    print("pyQA is Running")
 
 
 if __name__ == "__main__":
