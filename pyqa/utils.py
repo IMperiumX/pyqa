@@ -5,13 +5,98 @@ from urllib.request import getproxies
 
 import appdirs
 import requests
+from .erros import BlockError
 
-from cachelib import FileSystemCache, NullCache
-from pyqa.constants import (APP_NAME, CACHE_ENTRY_MAX, END_FORMAT, GREEN,
-                            NO_ANSWER_MSG, RED, SUPPORTED_SEARCH_ENGINES,
-                            USER_AGENTS, VERIFY_SSL_CERTIFICATE)
-from pyqa.erros import (BingValidationError, DDGValidationError,
-                        GoogleValidationError)
+# =======================================
+#        extract links from query      ||
+# =======================================
+
+
+def _extract_links_from_bing(html):
+    html.remove_namespaces()
+    return [a.attrib["href"] for a in html(".b_algo")("h2")("a")]
+
+
+def _clean_google_link(link):
+    if "/url?" in link:
+        parsed_link = urlparse(link)
+        query_params = parse_qs(parsed_link.query)
+        url_params = query_params.get("q", []) or query_params.get("url", [])
+        if url_params:
+            return url_params[0]
+    return link
+
+
+def _extract_links_from_google(query_object):
+    html = query_object.html()
+    link_pattern = re.compile(rf"https?://{URL}/questions/[0-9]*/[a-z0-9-]*")
+    links = link_pattern.findall(html)
+    links = [_clean_google_link(link) for link in links]
+    return links
+
+
+def _extract_links_from_duckduckgo(html):
+    html.remove_namespaces()
+    links_anchors = html.find("a.result__a")
+    results = []
+    for anchor in links_anchors:
+        link = anchor.attrib["href"]
+        url_obj = urlparse(link)
+        parsed_url = parse_qs(url_obj.query).get("uddg", "")
+        if parsed_url:
+            results.append(parsed_url[0])
+    return results
+
+
+def _extract_links(html, search_engine):
+    if search_engine == "bing":
+        return _extract_links_from_bing(html)
+    if search_engine == "duckduckgo":
+        return _extract_links_from_duckduckgo(html)
+    return _extract_links_from_google(html)
+
+
+def _get_search_url(search_engine):
+    return SEARCH_URLS.get(search_engine, SEARCH_URLS["google"])
+
+
+def _is_blocked(page):
+    for indicator in BLOCK_INDICATORS:
+        if page.find(indicator) != -1:
+            return True
+
+    return False
+
+
+def _get_links(query):
+    search_url = _get_search_url(SEARCH_ENGINE).format(URL, url_quote(query))
+
+    logging.info("Searching %s with URL: %s", SEARCH_ENGINE, search_url)
+
+    try:
+        result = _get_result(search_url)
+    except requests.HTTPError:
+        logging.info("Received HTTPError")
+        result = None
+    if not result or _is_blocked(result):
+        logging.error(
+            "%sUnable to find an answer because the search engine temporarily blocked the request. "
+            "Attempting to use a different search engine.%s",
+            RED,
+            END_FORMAT,
+        )
+        raise BlockError("Temporary block by search engine")
+
+    html = pq(result)
+    links = _extract_links(html, SEARCH_ENGINE)
+    if len(links) == 0:
+        logging.info(
+            "Search engine %s found no StackOverflow links, returned HTML is:",
+            SEARCH_ENGINE,
+        )
+        logging.info(result)
+    return list(dict.fromkeys(links))  # remove any duplicates
+
 
 # =======================================
 #         get page content             ||

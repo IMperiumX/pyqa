@@ -9,7 +9,7 @@ from rich.text import Text
 
 from pyqa import __version__
 from pyqa import utils
-from pyqa.constants import LOGO, URL, DEFUALT_QUERY, EPILOG
+from pyqa.constants import DEFUALT_QUERY, EPILOG
 
 
 @click.group()  # invoke_without_command=True
@@ -40,6 +40,8 @@ def query(ctx, **kwargs):
     query = kwargs["query"] or DEFUALT_QUERY
     query = " ".join(query)
     args["query"] = query
+
+    links = utils._get_links(query)
 
     best_link = links[0]  # TODO: iterate over links until user find his answer
     res = utils._get_answer(
