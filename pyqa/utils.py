@@ -137,3 +137,39 @@ def _get_answer(args, url):  # pylint: disable=too-many-branches
     text = text.strip()
     return text
 
+
+# =======================================
+#            CLI interface            ||
+# =======================================
+
+
+def display_panel(text=None, show_welcome_msg=True):
+    if show_welcome_msg:
+        print(
+            Panel(
+                Align.center(
+                    Text.from_ansi(LOGO, no_wrap=True),
+                    vertical="middle",
+                ),
+                border_style="green",
+                title="pyQA",
+                subtitle="Thank you for using pyQA",
+            )
+        )
+
+    answer = text or "No Answer Found!!"
+
+    def display_answer(answer):
+        print(
+            Panel(
+                Align.center(
+                    Text.from_ansi(answer, no_wrap=True),
+                    vertical="middle",
+                ),
+                border_style="green",
+                title="pyQA",
+                subtitle="Tank you for using pyQA",
+            )
+        )
+
+    return display_answer(answer)

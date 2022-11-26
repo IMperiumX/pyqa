@@ -36,35 +36,17 @@ def main(ctx, **kwargs):
 @click.pass_context
 def query(ctx, **kwargs):
     args = ctx.obj
+
     query = kwargs["query"] or DEFUALT_QUERY
-    args["query"] = " ".join(query)
+    query = " ".join(query)
+    args["query"] = query
 
-    print(
-        Panel(
-            Align.center(
-                Text.from_ansi(LOGO, no_wrap=True),
-                vertical="middle",
-            ),
-            border_style="green",
-            title="pyQA",
-            subtitle="Thank you for using pyQA",
-        )
-    )
+    best_link = links[0]  # TODO: iterate over links until user find his answer
+    res = utils._get_answer(
+        args, best_link
+    )  # TODO: use pygments for syntax highlighting
 
-    url = URL  # TODO: get link from query
-    res = utils._get_answer(args, url)
-    answer = res
-    print(
-        Panel(
-            Align.center(
-                Text.from_ansi(answer, no_wrap=True),
-                vertical="middle",
-            ),
-            border_style="green",
-            title="pyQA",
-            subtitle="Tank you for using pyQA",
-        )
-    )
+    utils.display_panel(text=res)
 
 
 @main.command()
