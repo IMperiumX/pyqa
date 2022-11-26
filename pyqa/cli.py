@@ -9,6 +9,8 @@ from pyqa import utils
 from pyqa.constants import DEFUALT_QUERY, EPILOG
 
 
+# TODO: take query from the execuatble directly with no sub command (query)
+# pyqa <QUERY> instead of pyqa query <QUERY>
 @click.group()  # invoke_without_command=True
 @click.version_option(__version__, message="pyQA, version %(version)s")
 @click.option("-a", "--all", is_flag=True)
@@ -22,8 +24,7 @@ from pyqa.constants import DEFUALT_QUERY, EPILOG
 def main(ctx, **kwargs):
     ctx.ensure_object(dict)
     args = ctx.obj
-
-    query = kwargs.get("query", "yusufadell")
+    # TODO: set number of answers to show
     args["engine"] = kwargs["engine"]
     args["all"] = kwargs["all"]
 
