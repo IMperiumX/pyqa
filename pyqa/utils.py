@@ -154,14 +154,21 @@ def _random_choice(seq):
     return seq[_random_int(1) % len(seq)]
 
 
+random_agent = _random_choice(USER_AGENTS)
+HEADER = {"User-Agent": random_agent}
+
+PROXIES = get_proxies()
+COOKIES = {"CONSENT": "YES+US.en+20221119-00-0"}
+
+
 def _get_result(url):
     try:
         resp = pyqa_session.get(
             url,
-            headers={"User-Agent": _random_choice(USER_AGENTS)},
-            proxies=get_proxies(),
+            headers=HEADER,
+            proxies=PROXIES,
             verify=VERIFY_SSL_CERTIFICATE,
-            cookies={"CONSENT": "YES+US.en+20221119-00-0"},
+            cookies=COOKIES,
         )
         resp.raise_for_status()
         return resp.text
@@ -205,7 +212,7 @@ def get_text(element):
 
 
 def _get_answer(args, url):  # pylint: disable=too-many-branches
-    logging.info("Fetching page: %s", url)
+    logging.info(f"Fetching page: {url}")
     page = _get_result(url + "?answertab=votes")
 
     html = pq(page)

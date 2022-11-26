@@ -8,7 +8,7 @@ get_env = os.getenv
 APP_NAME = "pyQA"
 LOGO = figlet_format(APP_NAME, font="slant")
 
-DEFUALT_QUERY = "how to center a div"
+DEFUALT_QUERY = "django filter in drf".split()
 
 EPILOG = textwrap.dedent(
     """\
@@ -38,10 +38,16 @@ STASH_EMPTY = "empty"
 
 BLOCKED_ENGINES = []
 
-SCHEME = "https://"
 VERIFY_SSL_CERTIFICATE = True
 
-SUPPORTED_SEARCH_ENGINES = ("google", "bing", "duckduckgo")
+BLOCK_INDICATORS = (
+    'form id="captcha-form"',
+    "This page appears when Google automatically detects requests coming from your computer "
+    'network which appear to be in violation of the <a href="//www.google.com/policies/terms/">Terms of Service',
+)
+
+CACHE_EMPTY_VAL = "NULL"
+CACHE_ENTRY_MAX = 128
 
 
 USER_AGENTS = (
@@ -58,6 +64,12 @@ USER_AGENTS = (
     ),
 )
 
+
+SUPPORTED_SEARCH_ENGINES = ("google", "bing", "duckduckgo")
+DEFAULT_SEARCH_ENGINE = "google"
+SEARCH_ENGINE = get_env("PYQA_SEARCH_ENGINE", DEFAULT_SEARCH_ENGINE)
+
+SCHEME = "https://"
 SEARCH_URLS = {
     "bing": SCHEME + "www.bing.com/search?q=site:{0}%20{1}&hl=en",
     "google": SCHEME + "www.google.com/search?q=site:{0}%20{1}&hl=en",
