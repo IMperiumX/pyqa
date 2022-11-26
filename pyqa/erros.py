@@ -8,3 +8,7 @@ class BingValidationError(Exception):
 
 class DDGValidationError(Exception):
     pass
+
+
+class BlockError(RuntimeError):
+    pass

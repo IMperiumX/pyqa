@@ -2,10 +2,7 @@
 import sys
 
 import click
-from rich import print
-from rich.align import Align
-from rich.panel import Panel
-from rich.text import Text
+
 
 from pyqa import __version__
 from pyqa import utils

@@ -1,10 +1,31 @@
 import inspect
 import logging
 import os
+import re
+from urllib.parse import parse_qs
+from urllib.parse import quote as url_quote
+from urllib.parse import urlparse
 from urllib.request import getproxies
 
-import appdirs
 import requests
+from rich import print
+from rich.align import Align
+from rich.panel import Panel
+from rich.text import Text
+
+from .constants import (
+    END_FORMAT,
+    LOGO,
+    NO_ANSWER_MSG,
+    RED,
+    USER_AGENTS,
+    VERIFY_SSL_CERTIFICATE,
+    URL,
+    SEARCH_ENGINE,
+    SEARCH_URLS,
+    BLOCK_INDICATORS,
+)
+
 from .erros import BlockError
 
 # =======================================
