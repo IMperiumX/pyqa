@@ -1,5 +1,9 @@
-from pyfiglet import figlet_format
+import os
 import textwrap
+
+from pyfiglet import figlet_format
+
+get_env = os.getenv
 
 APP_NAME = "pyQA"
 LOGO = figlet_format(APP_NAME, font="slant")
@@ -39,7 +43,6 @@ VERIFY_SSL_CERTIFICATE = True
 
 SUPPORTED_SEARCH_ENGINES = ("google", "bing", "duckduckgo")
 
-DEFAULT_URL = "stackoverflow.com"
 
 USER_AGENTS = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:11.0) Gecko/20100101 Firefox/11.0",
@@ -61,13 +64,6 @@ SEARCH_URLS = {
     "duckduckgo": SCHEME + "duckduckgo.com/html?q=site:{0}%20{1}&t=hj&ia=web",
 }
 
-BLOCK_INDICATORS = (
-    'form id="captcha-form"',
-    "This page appears when Google automatically detects requests coming from your computer "
-    'network which appear to be in violation of the <a href="//www.google.com/policies/terms/">Terms of Service',
-)
-
-CACHE_EMPTY_VAL = "NULL"
-CACHE_ENTRY_MAX = 128
-
-URL = "https://stackoverflow.com/questions/64007220/how-to-use-django-filters-to-filter-for-many-values-for-the-same-field"
+# URL = "https://stackoverflow.com/questions/64007220/how-to-use-django-filters-to-filter-for-many-values-for-the-same-field"
+DEFAULT_URL = "stackoverflow.com"
+URL = get_env("PYQA_URL", DEFAULT_URL)
