@@ -7,5 +7,5 @@ __version__ = "0.2.5"
 from pyqa.pyqa import command_line_runner
 
 __all__ = [
-    "pyqa",
+    "command_line_runner",
 ]
