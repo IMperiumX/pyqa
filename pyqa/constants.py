@@ -38,7 +38,6 @@ STASH_EMPTY = "empty"
 
 BLOCKED_ENGINES = []
 
-VERIFY_SSL_CERTIFICATE = True
 
 BLOCK_INDICATORS = (
     'form id="captcha-form"',
@@ -70,6 +69,12 @@ DEFAULT_SEARCH_ENGINE = "google"
 SEARCH_ENGINE = get_env("PYQA_SEARCH_ENGINE", DEFAULT_SEARCH_ENGINE)
 
 SCHEME = "https://"
+VERIFY_SSL_CERTIFICATE = True
+
+if get_env("PYQA_DISABLE_SSL"):  # Set http instead of https
+    SCHEME = "http://"
+    VERIFY_SSL_CERTIFICATE = False
+
 SEARCH_URLS = {
     "bing": SCHEME + "www.bing.com/search?q=site:{0}%20{1}&hl=en",
     "google": SCHEME + "www.google.com/search?q=site:{0}%20{1}&hl=en",
