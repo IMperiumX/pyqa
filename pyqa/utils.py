@@ -23,6 +23,7 @@ from .constants import (
     SEARCH_ENGINE,
     SEARCH_URLS,
     BLOCK_INDICATORS,
+    DEFUALT_QUERY,
 )
 
 from .erros import BlockError
@@ -89,9 +90,7 @@ def _is_blocked(page):
 
 
 def _get_links(query):
-    search_url = _get_search_url(SEARCH_ENGINE).format(URL, url_quote(query))
-
-    logging.info("Searching %s with URL: %s", SEARCH_ENGINE, search_url)
+    search_url = _format_query_url(query)
 
     try:
         result = _get_result(search_url)
@@ -107,6 +106,12 @@ def _get_links(query):
         )
         raise BlockError("Temporary block by search engine")
 
+    links = _get_result_links(result)
+    return links
+    # return list(dict.fromkeys(links))
+
+
+def _get_result_links(result):
     html = pq(result)
     links = _extract_links(html, SEARCH_ENGINE)
     if len(links) == 0:
@@ -115,7 +120,16 @@ def _get_links(query):
             SEARCH_ENGINE,
         )
         logging.info(result)
-    return list(dict.fromkeys(links))  # remove any duplicates
+    return links
+
+
+def _format_query_url(query):
+    query = query or DEFUALT_QUERY
+    query = " ".join(query)
+    search_url = _get_search_url(SEARCH_ENGINE).format(URL, url_quote(query))
+
+    logging.info("Searching %s with URL: %s", SEARCH_ENGINE, search_url)
+    return search_url  # remove any duplicates
 
 
 # =======================================
@@ -217,8 +231,8 @@ def _get_answer(args, url):  # pylint: disable=too-many-branches
     html = pq(page)
 
     first_answer = html(".answercell").eq(0) or html(".answer").eq(0)
-
     instructions = first_answer.find("pre") or first_answer.find("code")
+
     args["tags"] = [t.text for t in html(".post-tag")]
     # make decision on answer body class.
     if first_answer.find(".js-post-body"):
@@ -250,6 +264,16 @@ def _get_answer(args, url):  # pylint: disable=too-many-branches
     return text
 
 
+def _get_answers(args, urls):
+    # TODO: use pygments for syntax highlighting
+    res = {}
+
+    for i, url in enumerate(urls):
+        # return url
+        res[i] = _get_answer(args, url)
+    return list(res.values())
+
+
 # =======================================
 #            CLI interface            ||
 # =======================================
@@ -257,24 +281,14 @@ def _get_answer(args, url):  # pylint: disable=too-many-branches
 
 def display_panel(text=None, show_welcome_msg=True):
     if show_welcome_msg:
-        print(
-            Panel(
-                Align.center(
-                    Text.from_ansi(LOGO, no_wrap=True),
-                    vertical="middle",
-                ),
-                border_style="green",
-                title="pyQA",
-                subtitle="Thank you for using pyQA",
-            )
-        )
+        display_logo()
 
-    answer = text or "No Answer Found!!"
+    answer = text
 
     def display_answer(answer):
         print(
             Panel(
-                Align.center(
+                Align.left(
                     Text.from_ansi(answer, no_wrap=True),
                     vertical="middle",
                 ),
@@ -285,3 +299,29 @@ def display_panel(text=None, show_welcome_msg=True):
         )
 
     return display_answer(answer)
+
+
+def display_logo():
+    print(
+        Panel(
+            Align.center(
+                Text.from_ansi(LOGO, no_wrap=True),
+                vertical="middle",
+            ),
+            border_style="green",
+            title="pyQA",
+            subtitle="Thank you for using pyQA",
+        )
+    )
+
+
+def _disply_answers_panel(args):
+    urls = _get_links(args["query"])
+    n = args["num_asnwers"]
+    best_links = urls[:n]
+    answers = _get_answers(args, best_links)
+
+    display_logo()
+
+    for answer in answers:
+        display_panel(answer, show_welcome_msg=False)
