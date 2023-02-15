@@ -99,10 +99,8 @@ def _get_links(query):
         result = None
     if not result or _is_blocked(result):
         logging.error(
-            "%sUnable to find an answer because the search engine temporarily blocked the request. "
-            "Attempting to use a different search engine.%s",
-            RED,
-            END_FORMAT,
+            f"{RED}Unable to find an answer because the search engine temporarily blocked the request. "
+            f"Attempting to use a different search engine.{END_FORMAT}",
         )
         raise BlockError("Temporary block by search engine")
 
@@ -116,8 +114,7 @@ def _get_result_links(result):
     links = _extract_links(html, SEARCH_ENGINE)
     if len(links) == 0:
         logging.info(
-            "Search engine %s found no StackOverflow links, returned HTML is:",
-            SEARCH_ENGINE,
+            f"Search engine {SEARCH_ENGINE} found no StackOverflow links, returned HTML is:",
         )
         logging.info(result)
     return links
@@ -125,10 +122,9 @@ def _get_result_links(result):
 
 def _format_query_url(query):
     query = query or DEFUALT_QUERY
-    query = " ".join(query)
     search_url = _get_search_url(SEARCH_ENGINE).format(URL, url_quote(query))
 
-    logging.info("Searching %s with URL: %s", SEARCH_ENGINE, search_url)
+    logging.info(f"Searching {SEARCH_ENGINE} with URL: {search_url}")
     return search_url  # remove any duplicates
 
 
@@ -353,8 +349,11 @@ def display_logo():
 
 
 def _disply_answers_panel(args):
-    urls = _get_links(args["query"])
-    n = args["num_asnwers"]
+    query_string = " ".join(args["query"])
+    urls = _get_links(query_string)
+    n = args[
+        "num_asnwers"
+    ]  # TODO: make numansers from same stackoverflow page not differnt link.
     best_links = urls[:n]
     answers = _get_answers(args, best_links)
 
