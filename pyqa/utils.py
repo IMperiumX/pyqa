@@ -187,10 +187,8 @@ def _get_result(url):
         return resp.text
     except requests.exceptions.SSLError as error:
         logging.error(
-            "%sEncountered an SSL Error. Try using HTTP instead of "
-            'HTTPS by setting the environment variable "PYQA_DISABLE_SSL".\n%s',
-            RED,
-            END_FORMAT,
+            f"{RED}Encountered an SSL Error. Try using HTTP instead of "
+            'HTTPS by setting the environment variable "PYQA_DISABLE_SSL".\n{END_FORMAT}',
         )
         raise error
 
@@ -215,8 +213,10 @@ def _add_links_to_text(element):
         pquery_object.replace_with(replacement)
 
 
-def get_text(element):
+def _get_text(element):
     """return inner text in pyquery element"""
+    logging.info("No code sample found, returning entire answer")
+
     _add_links_to_text(element)
     try:
         return element.text(squash_space=False)
@@ -225,43 +225,80 @@ def get_text(element):
 
 
 def _get_answer(args, url):  # pylint: disable=too-many-branches
+    first_answer, instructions, answer_body_cls = setUp(args, url)
+
+    text = _answer_text_handler(args, first_answer, instructions, answer_body_cls)
+    return text
+
+
+def setUp(args, url):
     logging.info(f"Fetching page: {url}")
     page = _get_result(url + "?answertab=votes")
 
     html = pq(page)
 
-    first_answer = html(".answercell").eq(0) or html(".answer").eq(0)
-    instructions = first_answer.find("pre") or first_answer.find("code")
+    first_answer = _get_first_answer(html)
+    instructions = _get_instructions(first_answer)
 
-    args["tags"] = [t.text for t in html(".post-tag")]
+    set_tags(args, html)
     # make decision on answer body class.
+    answer_body_cls = _get_answer_body_class(first_answer)
+    return first_answer, instructions, answer_body_cls
+
+
+def _answer_text_handler(args, first_answer, instructions, answer_body_cls):
+    if not instructions and not args["all"]:
+        text = _get_text(first_answer.find(answer_body_cls).eq(0))
+    elif args["all"]:
+        text = _get_entire_answer(first_answer, answer_body_cls)
+    else:
+        text = _get_text(instructions.eq(0))
+    if text is None:
+        text = empty_answer()
+    text = text.strip()
+    return text
+
+
+def empty_answer():
+    logging.info(f"{RED}Answer was empty{END_FORMAT}")
+    text = NO_ANSWER_MSG
+    return text
+
+
+def _get_entire_answer(first_answer, answer_body_cls):
+    logging.info("Returning entire answer")
+    texts = []
+    for html_tag in first_answer.items(f"{answer_body_cls} > *"):
+        current_text = _get_text(html_tag)
+        if current_text:
+            if html_tag[0].tag in ["pre", "code"]:
+                texts.append(current_text)
+            else:
+                texts.append(current_text)
+    return "\n".join(texts)
+
+
+def _get_answer_body_class(first_answer):
     if first_answer.find(".js-post-body"):
         answer_body_cls = ".js-post-body"
     else:
         # rollback to post-text class
         answer_body_cls = ".post-text"
+    return answer_body_cls
 
-    if not instructions and not args["all"]:
-        logging.info("No code sample found, returning entire answer")
-        text = get_text(first_answer.find(answer_body_cls).eq(0))
-    elif args["all"]:
-        logging.info("Returning entire answer")
-        texts = []
-        for html_tag in first_answer.items(f"{answer_body_cls} > *"):
-            current_text = get_text(html_tag)
-            if current_text:
-                if html_tag[0].tag in ["pre", "code"]:
-                    texts.append(current_text)
-                else:
-                    texts.append(current_text)
-        text = "\n".join(texts)
-    else:
-        text = get_text(instructions.eq(0))
-    if text is None:
-        logging.info("%sAnswer was empty%s", RED, END_FORMAT)
-        text = NO_ANSWER_MSG
-    text = text.strip()
-    return text
+
+def set_tags(args, html):
+    args["tags"] = [t.text for t in html(".post-tag")]
+
+
+def _get_instructions(first_answer):
+    instructions = first_answer.find("pre") or first_answer.find("code")
+    return instructions
+
+
+def _get_first_answer(html):
+    first_answer = html(".answercell").eq(0) or html(".answer").eq(0)
+    return first_answer
 
 
 def _get_answers(args, urls):
