@@ -2,7 +2,6 @@
 
 import click
 
-
 from pyqa import __version__
 from pyqa import utils
 from pyqa.constants import EPILOG
@@ -29,7 +28,7 @@ def main(ctx, **kwargs):
     args["query"] = kwargs["query"]
     args["num_asnwers"] = kwargs["num_asnwers"]
 
-    utils._disply_answers_panel(args)
+    utils._display_answers_panel(args)
 
 
 if __name__ == "__main__":

@@ -25,8 +25,8 @@ from .constants import (
     BLOCK_INDICATORS,
     DEFUALT_QUERY,
 )
-
 from .erros import BlockError
+
 
 # =======================================
 #        extract links from query      ||
@@ -348,7 +348,7 @@ def display_logo():
     )
 
 
-def _disply_answers_panel(args):
+def _display_answers_panel(args):
     query_string = " ".join(args["query"])
     urls = _get_links(query_string)
     n = args[
