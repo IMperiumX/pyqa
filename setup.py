@@ -3,7 +3,8 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
-from pyqa import __version__, __author__, __email__
+
+from pyqa import __version__, __author__, __email__, __github_username__
 
 with open("README.md") as readme_file:
     readme = readme_file.read()
@@ -38,7 +39,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],
-    description="Python console appliction that searches the internet for asnwers to coding problems",
+    description="Python console application that searches the internet for answers to coding problems",
     entry_points={
         "console_scripts": [
             "pyqa=pyqa.cli:main",
@@ -54,7 +55,7 @@ setup(
     packages=find_packages(include=["pyqa", "pyqa.*"]),
     test_suite="tests",
     tests_require=test_requirements,
-    url="https://github.com/yusufadell/pyqa",
+    url=f"https://github.com/{__github_username__}/pyqa",
     version=__version__,
     zip_safe=False,
 )
