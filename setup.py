@@ -16,6 +16,8 @@ requirements = [
     "rich>=12.6.0",
     "textual>=0.4.0",
     "pyfiglet>=0.8.post1",
+    "requests>=2.31.0",
+    "pyquery>=2.0.0",
 ]
 
 test_requirements = [
