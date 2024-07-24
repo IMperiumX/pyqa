@@ -22,13 +22,15 @@ from pyqa.constants import EPILOG
 def main(ctx, **kwargs):
     ctx.ensure_object(dict)
     args = ctx.obj
+    get = kwargs.get
 
-    args["engine"] = kwargs["engine"]
-    args["all"] = kwargs["all"]
-    args["query"] = kwargs["query"]
-    args["num_asnwers"] = kwargs["num_asnwers"]
-
-    utils._display_answers_panel(args)
+    args.update(
+        engine=get("engine", "google"),
+        all=get("all", False),
+        query=get("query", ()),
+        num_answers=get("num_answers", 1),
+    )
+    utils.display_answers_panel(args)
 
 
 if __name__ == "__main__":

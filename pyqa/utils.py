@@ -348,11 +348,11 @@ def display_logo():
     )
 
 
-def _display_answers_panel(args):
+def display_answers_panel(args):
     query_string = " ".join(args["query"])
     urls = _get_links(query_string)
     n = args[
-        "num_asnwers"
+        "num_answers"
     ]  # TODO: make numansers from same stackoverflow page not differnt link.
     best_links = urls[:n]
     answers = _get_answers(args, best_links)
